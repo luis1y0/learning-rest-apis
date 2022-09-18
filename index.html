@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check-List</title>
+    <style>
+        .vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .vertical > * {
+            width: 80%;
+        }
+    </style>
+    <script>
+        /**
+         * @param {string} selector - Component to show
+         **/
+        function showComponent(selector) {
+            let children = document.querySelectorAll('body > *');
+            children.forEach(element => element.style.display = 'none');
+            let element = document.querySelector(selector);
+            if (element) {
+                element.style.display = 'inherit';
+            }
+        }
+        window.addEventListener('DOMContentLoaded', function () {
+            let elem1 = document.querySelector('#login');
+            let elem2 = document.querySelector('#main');
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    console.log(entry.isIntersecting);
+                });
+            });
+            observer.observe(elem1);
+            observer.observe(elem2);
+            showComponent('#login');
+        });
+        async function createJsonStorage(el) {
+            let response = await fetch(
+                'https://api.jsonstorage.net/v1/json',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify([])
+                }
+            );
+            let data = await response.json();
+            console.log(data);
+        }
+        async function createProblemClick(el) {
+            let urlElem = document.querySelector('#inputUrl');
+            let difficultElem = document.querySelector('#inputDifficulty');
+            let rateElem = document.querySelector('#inputSuccesRate');
+            let response = await fetch(
+                'https://api.jsonstorage.net/v1/json/00000000-0000-0000-0000-000000000000/ec466003-baf0-4585-ab84-8b04b98ab098',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify([])
+                }
+            );
+            let data = await response.json();
+            console.log(data);
+        }
+        async function getProblems(el) {
+            let response = await fetch(
+                'https://api.jsonstorage.net/v1/json/00000000-0000-0000-0000-000000000000/ec466003-baf0-4585-ab84-8b04b98ab098'
+            );
+            let data = await response.json();
+            console.log(localStorage);
+        }
+    </script>
+</head>
+<body class="vertical">
+    <div id="login" class="vertical">
+        <div class="vertical">
+            <input id="inputUrl" type="text" placeholder="Leetcode url">
+            <input id="inputDifficulty" type="text" placeholder="Dificultad">
+            <input id="inputSuccesRate" type="text" placeholder="Porcentaje de exito">
+            <button onclick="createProblemClick(this)">Agregar</button>
+        </div>
+        <div class="vertical">
+            <button onclick="getProblems(this)">Actualizar</button>
+        </div>
+        <!--button onclick="showComponent('#main')">mostrar main</button-->
+    </div>
+    <div id="main">
+        <input id="inputUrl" type="text">
+        <input id="inputToken" type="text">
+        <button onclick="showComponent('#login')">mostrar login</button>
+    </div>
+</body>
+</html>
