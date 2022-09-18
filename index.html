@@ -16,6 +16,8 @@
         }
     </style>
     <script>
+        let apiUrl = 'https://api.jsonstorage.net/v1/json/29bebbef-0994-4aaf-8c81-ac8e699b259e/2afbafac-4651-483e-8de8-ee5b3d17c451';
+        let apiKey = '8d87b367-c2a3-4cfc-ad0c-a40925404599';
         /**
          * @param {string} selector - Component to show
          **/
@@ -41,7 +43,7 @@
         });
         async function createJsonStorage(el) {
             let response = await fetch(
-                'https://api.jsonstorage.net/v1/json',
+                `${apiUrl}?apiKey=${apiKey}`,
                 {
                     method: 'POST',
                     headers: {
@@ -57,25 +59,38 @@
             let urlElem = document.querySelector('#inputUrl');
             let difficultElem = document.querySelector('#inputDifficulty');
             let rateElem = document.querySelector('#inputSuccesRate');
+            let problemsRaw = localStorage.getItem('problems') ?? '[]';
+            let problems = JSON.parse(problemsRaw);
+            problems.push({
+                url: urlElem.value,
+                level: difficultElem.value,
+                rate: rateElem.value,
+                completed: false
+            });
             let response = await fetch(
-                'https://api.jsonstorage.net/v1/json/00000000-0000-0000-0000-000000000000/ec466003-baf0-4585-ab84-8b04b98ab098',
+                `${apiUrl}?apiKey=${apiKey}`,
                 {
-                    method: 'POST',
+                    method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify([])
+                    body: JSON.stringify(problems)
                 }
             );
-            let data = await response.json();
-            console.log(data);
+            if (response.ok) {
+                localStorage.setItem('problems', JSON.stringify(problems));
+            }
         }
         async function getProblems(el) {
-            let response = await fetch(
-                'https://api.jsonstorage.net/v1/json/00000000-0000-0000-0000-000000000000/ec466003-baf0-4585-ab84-8b04b98ab098'
-            );
-            let data = await response.json();
-            console.log(localStorage);
+            let problems = localStorage.getItem('problems');
+            if (!problems) {
+                let response = await fetch(
+                    'https://api.jsonstorage.net/v1/json/00000000-0000-0000-0000-000000000000/ec466003-baf0-4585-ab84-8b04b98ab098'
+                );
+                problems = await response.text();
+                localStorage.setItem('problems', problems);
+            }
+            console.log(problems);
         }
     </script>
 </head>
@@ -87,6 +102,7 @@
             <input id="inputSuccesRate" type="text" placeholder="Porcentaje de exito">
             <button onclick="createProblemClick(this)">Agregar</button>
         </div>
+        <hr>
         <div class="vertical">
             <button onclick="getProblems(this)">Actualizar</button>
         </div>
